@@ -1,1 +1,1 @@
-! This application runs exclusively on host port 30003 !
+! This application runs exclusively on node port 30003 !
