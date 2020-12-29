@@ -38,44 +38,31 @@ echo 'br_netfilter' > /etc/modules-load.d/kubernetes.conf
 modprobe br_netfilter
 
 
-# INSTALL DOCKER
+# INSTALL CONTAINERD
 
 
-echo "[$SCRIPT] Install Docker"
+echo "[$SCRIPT] Install containerd"
 apt-get update
-apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-apt-get update
-apt-get install -y containerd.io docker-ce docker-ce-cli
+apt-get install -y containerd
 
-echo "[$SCRIPT] Configure Docker runtime to use systemd cgroup" 
-cat > /etc/docker/daemon.json <<EOF
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2",
-  "storage-opts": [
-    "overlay2.override_kernel_check=true"
-  ]
-}
+echo "[$SCRIPT] Configure system for containerd"
+cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
 EOF
+modprobe overlay
+modprobe br_netfilter
+cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.ip_forward                 = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+sysctl --system
 
-echo "[$SCRIPT] Start and enable Docker" 
-systemctl daemon-reload >/dev/null 2>&1
-systemctl enable docker >/dev/null 2>&1
-systemctl restart docker >/dev/null 2>&1
+echo "[$SCRIPT] Configure containerd"
+mkdir -p /etc/containerd
+containerd config default > /etc/containerd/config.toml
+systemctl restart containerd
 
 
 # INSTALL KUBEADM, KUBECTL AND KUBELET

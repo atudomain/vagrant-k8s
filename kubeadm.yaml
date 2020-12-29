@@ -12,7 +12,7 @@ localAPIEndpoint:
   advertiseAddress: 172.17.17.10
   bindPort: 6443
 nodeRegistration:
-  criSocket: /var/run/dockershim.sock
+  criSocket: /run/containerd/containerd.sock
   name: master
   taints:
   - effect: NoSchedule
