@@ -18,6 +18,7 @@ Vagrant.configure("2") do |config|
     master.vm.provision :shell, path: "bootstrap_master.sh"
     master.vm.provision :shell, path: "deploy_nginx.sh"
     master.vm.network :forwarded_port, guest: 30003, host: 6080
+    master.vm.boot_timeout = 600
   end
 
 
@@ -36,6 +37,7 @@ Vagrant.configure("2") do |config|
         v.cpus = 1
       end
       node.vm.provision :shell, path: "bootstrap_node.sh"
+      node.vm.boot_timeout = 600
     end
   end
 
