@@ -5,7 +5,7 @@ Example of Kubernetes cluster automated with Vagrant:
 - Bootstrapping: kubeadm (https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/)
 - Nodes operating system: Ubuntu 20.04
 - Networking: Weave Net
-- Container runtime: Docker with systemd as cgroup driver
+- Container runtime: containerd with systemd as cgroup driver
 - Number of nodes: 1 master and 2 slaves
 
 Contains Helm chart of Nginx proxy that serves https://infconfig.co over http. Port is exposed externally on master node virtual machine using Kubernetes node port and Vagrant port forwarding. It would be more flexible to use an ingress in production evironment.

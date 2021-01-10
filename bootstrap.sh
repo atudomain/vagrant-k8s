@@ -59,9 +59,12 @@ net.bridge.bridge-nf-call-ip6tables = 1
 EOF
 sysctl --system
 
-echo "[$SCRIPT] Configure containerd"
+echo "[$SCRIPT] Configure containerd with systemd cgroup driver"
 mkdir -p /etc/containerd
-containerd config default > /etc/containerd/config.toml
+cp -f /vagrant/containerd-config.toml /etc/containerd/config.toml
+
+echo "[$SCRIPT] Enable and restart containerd to reload configuration"
+systemctl enable containerd
 systemctl restart containerd
 
 
